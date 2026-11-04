@@ -2,8 +2,7 @@ backend:
   name: github
   repo: kac0pi/kac0pi
   branch: main
-  # Tutaj musisz wkleić adres swojego darmowego proxy OAuth (np. po wdrożeniu netlify-cms-oauth-provider)
-  base_url: https://TWOJA-BRAMKA-OAUTH.netlify.app
+  base_url: https://helpful-muffin-8f1c7b.netlify.app
   auth_endpoint: auth
 
 site_url: https://kac0pi.github.io/kac0pi
