@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: kac0pi/kac0pi
-  branch: main
+  branch: master
   base_url: https://helpful-muffin-8f1c7b.netlify.app
   auth_endpoint: auth
 
