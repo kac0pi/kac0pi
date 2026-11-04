@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#070b18">
+  <meta name="description" content="Blog IT kac0pi — web development, hardware, Linux i technologia.">
+  <title>Blog IT — kac0pi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"><script src="script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" defer></script>
+</head>
+<body data-page="blog">
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div><div class="site-shell">
+    <header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">k<span>.</span></span><span>kac0pi</span></a><button class="menu-toggle" aria-label="Otwórz menu" aria-expanded="false"><span></span><span></span></button><nav class="main-nav"><a href="index.html">Start</a><a class="active" href="blog.html">Blog IT</a><a href="gry.html">Mini-gry</a><a class="nav-cta" href="https://github.com/" target="_blank" rel="noreferrer">GitHub <span>↗</span></a></nav></header>
+    <main class="page-main">
+      <section class="page-hero"><p class="eyebrow"><span class="status-dot"></span> 02 / KNOWLEDGE BASE</p><h1>Blog <span class="gradient-text">IT.</span></h1><p>Notatki z cyfrowego świata. Tutoriale, testy, sprzęt i rozwiązania problemów — bez zbędnego nadęcia.</p><div class="blog-toolbar"><div class="search-wrap"><span>⌕</span><input id="post-search" type="search" placeholder="Szukaj artykułu..." aria-label="Szukaj artykułu"></div><div class="filter-list" id="tag-filters"><button class="filter-chip active" data-tag="all">Wszystkie</button><button class="filter-chip" data-tag="webdev">#webdev</button><button class="filter-chip" data-tag="hardware">#hardware</button><button class="filter-chip" data-tag="linux">#linux</button></div></div></section>
+      <section class="blog-content"><div class="post-grid" id="post-grid"><article class="post-card"><div class="post-card-art"><span>01</span><b>LOADING_ARTICLES...</b></div><div class="post-card-body"><p class="post-meta">SYSTEM / BLOG</p><h2>Ładowanie wpisów</h2><p>Za chwilę pojawią się tutaj artykuły.</p></div></article></div><p class="empty-state" id="empty-state" hidden>Nie znaleziono artykułów dla tego wyszukiwania.</p></section>
+      <section class="newsletter-note glass-panel"><span class="note-icon">⌁</span><div><strong>Masz pomysł na temat?</strong><p class="muted">Blog jest rozwijany razem z projektami. Nowe wpisy pojawiają się po publikacji w panelu CMS.</p></div></section>
+    </main>
+    <footer class="footer"><a class="brand footer-brand" href="index.html"><span class="brand-mark">k<span>.</span></span><span>kac0pi</span></a><span>© <span data-year></span> kac0pi. Built with curiosity.</span><span class="footer-right">KNOWLEDGE SHARED<span class="footer-pulse">_</span></span></footer>
+  </div>
+  <dialog class="article-dialog" id="article-dialog"><div class="dialog-top"><span class="eyebrow">ARTICLE / KAC0PI</span><button class="dialog-close" aria-label="Zamknij artykuł">×</button></div><article id="article-content" class="article-content"></article></dialog>
+</body></html>

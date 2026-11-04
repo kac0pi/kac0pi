@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b18">
+  <meta name="description" content="kac0pi — osobista strona, blog IT i mini-gry.">
+  <title>kac0pi — personal space</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body data-page="home">
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="kac0pi — strona główna"><span class="brand-mark">k<span>.</span></span><span>kac0pi</span></a>
+      <button class="menu-toggle" aria-label="Otwórz menu" aria-expanded="false"><span></span><span></span></button>
+      <nav class="main-nav" aria-label="Główna nawigacja">
+        <a class="active" href="index.html">Start</a><a href="blog.html">Blog IT</a><a href="gry.html">Mini-gry</a>
+        <a class="nav-cta" href="https://github.com/" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero section">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="status-dot"></span> PERSONAL WEBSITE / ONLINE</div>
+          <p class="hero-kicker">Hej, jestem</p>
+          <h1 class="hero-title"><span class="gradient-text">kac0pi</span><span class="cursor">_</span></h1>
+          <p class="hero-subtitle"><span id="typing-text">IT enthusiast</span><span class="typing-caret">|</span></p>
+          <p class="hero-description">Odkrywam świat technologii, tworzę projekty i testuję pomysły. To moje miejsce w sieci — trochę portfolio, trochę blog, trochę cyfrowy plac zabaw.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#projects">Zobacz projekty <span>↘</span></a><a class="button button-ghost" href="blog.html">Czytaj blog <span>→</span></a></div>
+          <div class="hero-meta"><span><i class="meta-line"></i> HTML / CSS / JS</span><span><i class="meta-line"></i> Always learning</span></div>
+        </div>
+        <div class="hero-visual" aria-label="Dekoracyjna grafika terminala">
+          <div class="orb orb-a"></div><div class="orb orb-b"></div>
+          <div class="terminal-card">
+            <div class="terminal-top"><div class="terminal-dots"><b></b><b></b><b></b></div><span>kac0pi@web:~</span><span class="terminal-lock">⌁</span></div>
+            <div class="terminal-body">
+              <p><span class="term-muted">01</span> <span class="term-purple">const</span> <span class="term-cyan">developer</span> = {</p>
+              <p class="indent"><span class="term-pink">nickname</span>: <span class="term-green">"kac0pi"</span>,</p>
+              <p class="indent"><span class="term-pink">interests</span>: [</p>
+              <p class="indent2"><span class="term-green">"web development"</span>,</p>
+              <p class="indent2"><span class="term-green">"hardware"</span>,</p>
+              <p class="indent2"><span class="term-green">"Linux"</span></p>
+              <p class="indent">],</p>
+              <p class="indent"><span class="term-pink">status</span>: <span class="term-green">"building things"</span></p>
+              <p>};</p>
+              <p class="terminal-last"><span class="term-cyan">➜</span> <span class="term-muted">Ready for the next idea.</span><span class="blink">▌</span></p>
+            </div>
+          </div>
+          <div class="float-chip chip-top"><span class="chip-icon">⌘</span> creative mode</div>
+          <div class="float-chip chip-bottom"><span class="status-dot"></span> system online</div>
+        </div>
+        <div class="scroll-cue"><span></span> SCROLL TO EXPLORE</div>
+      </section>
+
+      <section class="section about-section" id="about">
+        <div class="section-heading"><div><p class="eyebrow">01 / ABOUT</p><h2>Trochę o <span class="gradient-text">mnie.</span></h2></div><p class="section-aside">Curiosity is my favorite tool.</p></div>
+        <div class="about-grid">
+          <div class="about-panel glass-panel"><div class="panel-label"><span class="tiny-square"></span> README.md</div><h3>Technologia to mój żywioł.</h3><p>Interesuję się informatyką — od składania i poznawania sprzętu, przez systemy operacyjne, aż po tworzenie stron internetowych. Lubię sprawdzać, jak coś działa, rozwiązywać problemy i przekuwać pomysły w działające projekty.</p><p>Nie udaję, że wiem już wszystko. Uczę się, eksperymentuję i dokumentuję drogę.</p><div class="tag-row"><span class="tag">#curious</span><span class="tag">#self-taught</span><span class="tag">#tech</span></div></div>
+          <div class="stats-column"><div class="stat-card glass-panel"><span class="stat-icon">⌁</span><strong>01</strong><span>Mindset: learn by doing</span></div><div class="stat-card glass-panel"><span class="stat-icon">⌘</span><strong>∞</strong><span>Pomysłów do sprawdzenia</span></div><div class="stat-card glass-panel"><span class="stat-icon">↗</span><strong>24/7</strong><span>Curiosity mode</span></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="section-heading"><div><p class="eyebrow">02 / SELECTED WORK</p><h2>Moje <span class="gradient-text">projekty.</span></h2></div><p class="section-aside">Małe kroki, konkretne efekty.</p></div>
+        <div class="project-grid">
+          <a class="project-card project-featured" href="gry.html"><div class="project-top"><span class="project-type">INTERACTIVE / JS</span><span class="project-arrow">↗</span></div><div class="project-art art-games"><span class="pixel">0101</span><span class="game-symbol">✳</span><span class="pixel pixel-two">PLAY_</span></div><h3>Mini-games room</h3><p>Krótka przerwa od kodowania? Wskakuj do pokoju gier.</p><div class="tag-row"><span class="tag">JavaScript</span><span class="tag">Canvas</span></div></a>
+          <a class="project-card" href="blog.html"><div class="project-top"><span class="project-type">KNOWLEDGE BASE</span><span class="project-arrow">↗</span></div><div class="project-art art-blog"><span class="code-bracket">{ }</span><span class="art-caption">ideas → articles</span></div><h3>Blog IT</h3><p>Notatki, poradniki i rzeczy, których właśnie się uczę.</p><div class="tag-row"><span class="tag">#webdev</span><span class="tag">#linux</span></div></a>
+          <a class="project-card" href="https://kac0pi.github.io/osiemnastka/" target="_blank" rel="noopener noreferrer"><div class="project-top"><span class="project-type">PERSONAL / COUNTDOWN</span><span class="project-arrow">↘</span></div><div class="project-art art-countdown"><span class="count-number">18</span><span class="count-caption">LEVEL UNLOCK</span></div><h3>Droga do 18-stki</h3><p>Odliczanie do kolejnego levelu. Datę ustawisz w jednym miejscu w pliku JS.</p><div class="tag-row"><span class="tag">Countdown</span><span class="tag">Personal</span></div></a>
+        </div>
+</section>
+
+      <section class="section contact-section"><div class="contact-card"><div><p class="eyebrow">03 / CONNECT</p><h2>Masz pomysł? <span class="gradient-text">Daj znać.</span></h2><p class="muted">Znajdziesz mnie na GitHubie — tam trafiają moje eksperymenty i projekty.</p></div><a class="button button-primary" href="https://github.com/" target="_blank" rel="noreferrer">Otwórz GitHub ↗</a><div class="contact-glow"></div></div></section>
+    </main>
+    <footer class="footer"><a class="brand footer-brand" href="index.html"><span class="brand-mark">k<span>.</span></span><span>kac0pi</span></a><span>© <span data-year></span> kac0pi. Built with curiosity.</span><span class="footer-right">NO LIMITS. JUST CODE<span class="footer-pulse">_</span></span></footer>
+  </div>
+</body>
+</html>

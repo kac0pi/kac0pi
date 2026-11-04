@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "start-na-blogu",
+    "title": "Witaj na blogu kac0pi",
+    "description": "Pierwszy wpis — tutaj będą pojawiać się notatki, poradniki i projekty ze świata IT.",
+    "date": "2026-11-04",
+    "tags": [
+      "webdev",
+      "linux"
+    ],
+    "category": "START",
+    "file": "posts/start-na-blogu.md"
+  }
+]

@@ -1,0 +1,36 @@
+# Zmień OWNER/REPO na nazwę właściciela i repozytorium GitHub.
+backend:
+  name: github
+  repo: OWNER/REPO
+  branch: main
+  # GitHub Pages nie obsługuje serwerowego OAuth. Ustaw zewnętrzny,
+  # zaufany OAuth proxy i wpisz jego adres jako base_url.
+  base_url: https://YOUR-OAUTH-PROXY.example.com
+  auth_endpoint: auth
+
+site_url: https://OWNER.github.io/REPO
+display_url: https://OWNER.github.io/REPO
+
+media_folder: "assets/uploads"
+public_folder: "/REPO/assets/uploads"
+
+publish_mode: editorial_workflow
+locale: "pl"
+
+collections:
+  - name: "blog"
+    label: "Artykuły"
+    label_singular: "Artykuł"
+    folder: "posts"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{date}}"
+    fields:
+      - { label: "Tytuł", name: "title", widget: "string" }
+      - { label: "Data", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "DD.MM.YYYY", time_format: false }
+      - { label: "Opis", name: "description", widget: "text" }
+      - { label: "Tagi", name: "tags", widget: "list", default: ["webdev"] }
+      - { label: "Kategoria", name: "category", widget: "string", default: "IT" }
+      - { label: "Treść", name: "body", widget: "markdown" }
