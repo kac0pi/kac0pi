@@ -1,18 +1,16 @@
-# Zmień OWNER/REPO na nazwę właściciela i repozytorium GitHub.
 backend:
   name: github
-  repo: OWNER/REPO
+  repo: kac0pi/kac0pi
   branch: main
-  # GitHub Pages nie obsługuje serwerowego OAuth. Ustaw zewnętrzny,
-  # zaufany OAuth proxy i wpisz jego adres jako base_url.
-  base_url: https://YOUR-OAUTH-PROXY.example.com
+  # Tutaj musisz wkleić adres swojego darmowego proxy OAuth (np. po wdrożeniu netlify-cms-oauth-provider)
+  base_url: https://TWOJA-BRAMKA-OAUTH.netlify.app
   auth_endpoint: auth
 
-site_url: https://OWNER.github.io/REPO
-display_url: https://OWNER.github.io/REPO
+site_url: https://kac0pi.github.io/kac0pi
+display_url: https://kac0pi.github.io/kac0pi
 
 media_folder: "assets/uploads"
-public_folder: "/REPO/assets/uploads"
+public_folder: "/kac0pi/assets/uploads"
 
 publish_mode: editorial_workflow
 locale: "pl"
