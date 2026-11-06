@@ -1,4 +1,7 @@
 
+"use strict";
+
+/* KONFIGURACJA REPOZYTORIUM */
 const OWNER = "kac0pi";
 const REPO = "kac0pi";
 const BRANCH = "main";
@@ -9,19 +12,42 @@ let token = "";
 let posts = [];
 let selectedSlug = null;
 let selectedSha = null;
+let busy = false;
 
 const $ = id => document.getElementById(id);
 
-$("year").textContent = new Date().getFullYear();
-$("date").value = new Date().toISOString().slice(0, 10);
+/* DATA W CZASIE LOKALNYM */
+function today() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-function showMessage(id, text, error = false) {
+    return `${year}-${month}-${day}`;
+}
+
+$("year").textContent = new Date().getFullYear();
+$("date").value = today();
+
+/* KOMUNIKATY */
+function showMessage(id, message, error = false) {
     const element = $(id);
-    element.textContent = text;
+
+    element.textContent = message;
     element.className = error ? "message error" : "message";
 }
 
-function headers(extra = {}) {
+function setBusy(value) {
+    busy = value;
+
+    $("save").disabled = value;
+    $("deletePost").disabled = value;
+    $("newPost").disabled = value;
+    $("logout").disabled = value;
+}
+
+/* GITHUB API */
+function authHeaders(extra = {}) {
     return {
         Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github+json",
@@ -33,7 +59,7 @@ function headers(extra = {}) {
 async function github(path, options = {}) {
     const response = await fetch(API + path, {
         ...options,
-        headers: headers(options.headers || {})
+        headers: authHeaders(options.headers || {})
     });
 
     const data = response.status === 204
@@ -42,29 +68,39 @@ async function github(path, options = {}) {
 
     if (!response.ok) {
         if (response.status === 401) {
-            throw new Error("Nieprawidłowy lub wygasły token.");
+            throw new Error("Token GitHub jest nieprawidłowy lub wygasł.");
         }
 
         if (response.status === 403) {
             throw new Error(
-                "Brak uprawnień. Ustaw Contents: Read and write."
+                "Brak uprawnień. Sprawdź Contents: Read and write. Możliwy jest też limit API."
             );
         }
 
         if (response.status === 404) {
             throw new Error(
-                "Nie znaleziono repozytorium lub gałęzi main."
+                "Nie znaleziono repozytorium, gałęzi lub pliku."
             );
         }
 
-        throw new Error(data.message || "Błąd GitHub API.");
+        if (response.status === 409 || response.status === 422) {
+            throw new Error(
+                data?.message ||
+                "Konflikt wersji pliku. Odśwież listę artykułów i spróbuj ponownie."
+            );
+        }
+
+        throw new Error(
+            data?.message || `Błąd GitHub API (${response.status}).`
+        );
     }
 
     return data;
 }
 
-function encodeBase64(text) {
-    const bytes = new TextEncoder().encode(text);
+/* KODOWANIE UTF-8 DO BASE64 */
+function encodeBase64(value) {
+    const bytes = new TextEncoder().encode(value);
     let binary = "";
 
     for (let i = 0; i < bytes.length; i += 32768) {
@@ -76,8 +112,8 @@ function encodeBase64(text) {
     return btoa(binary);
 }
 
-function decodeBase64(text) {
-    const binary = atob(text.replace(/\n/g, ""));
+function decodeBase64(value) {
+    const binary = atob(value.replace(/\n/g, ""));
 
     const bytes = Uint8Array.from(
         binary,
@@ -87,8 +123,9 @@ function decodeBase64(text) {
     return new TextDecoder("utf-8").decode(bytes);
 }
 
-function slugify(text) {
-    return text
+/* TWORZENIE ADRESU ARTYKUŁU */
+function slugify(value) {
+    return value
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -98,6 +135,7 @@ function slugify(text) {
         .slice(0, 70) || "nowy-wpis";
 }
 
+/* ODCZYTYWANIE METADANYCH MARKDOWN */
 function parsePost(raw, slug) {
     const meta = {
         title: slug,
@@ -121,7 +159,9 @@ function parsePost(raw, slug) {
         const tag = line.match(/^\s+-\s*(.+)$/);
 
         if (tag && tagsMode) {
-            meta.tags.push(tag[1].replace(/^["']|["']$/g, ""));
+            meta.tags.push(
+                tag[1].replace(/^["']|["']$/g, "")
+            );
             continue;
         }
 
@@ -138,7 +178,9 @@ function parsePost(raw, slug) {
             meta.tags = value
                 .replace(/^\[|\]$/g, "")
                 .split(",")
-                .map(item => item.trim().replace(/^["']|["']$/g, ""));
+                .map(item =>
+                    item.trim().replace(/^["']|["']$/g, "")
+                );
         } else if (key !== "tags" && key in meta) {
             meta[key] = value.replace(/^["']|["']$/g, "");
         }
@@ -150,6 +192,7 @@ function parsePost(raw, slug) {
     };
 }
 
+/* TWORZENIE PLIKU MARKDOWN */
 function makeMarkdown() {
     const tags = $("tags").value
         .split(",")
@@ -171,6 +214,7 @@ ${$("content").value.trim()}
 `;
 }
 
+/* BEZPIECZNE WYŚWIETLANIE TEKSTU */
 function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;",
@@ -181,11 +225,12 @@ function escapeHTML(value) {
     }[char]));
 }
 
+/* LISTA ARTYKUŁÓW */
 function renderPosts() {
-    const filter = $("search").value.toLowerCase();
+    const filter = $("search").value.toLowerCase().trim();
 
     const filtered = posts.filter(post =>
-        `${post.meta.title} ${post.slug} ${post.meta.tags.join(" ")}`
+        `${post.meta.title} ${post.slug} ${(post.meta.tags || []).join(" ")}`
             .toLowerCase()
             .includes(filter)
     );
@@ -195,25 +240,28 @@ function renderPosts() {
             <button
                 class="post-item ${post.slug === selectedSlug ? "active" : ""}"
                 data-slug="${escapeHTML(post.slug)}"
-                type="button"
-            >
+                type="button">
+
                 <strong>${escapeHTML(post.meta.title)}</strong>
                 <small>${escapeHTML(post.meta.date)}</small>
             </button>
         `).join("")
-        : "<p class='muted'>Brak artykułów.</p>";
+        : "<p class='muted'>Nie znaleziono artykułów.</p>";
 
     $("postList").querySelectorAll("[data-slug]").forEach(button => {
         button.addEventListener("click", () => {
-            const post = posts.find(item =>
-                item.slug === button.dataset.slug
+            const post = posts.find(
+                item => item.slug === button.dataset.slug
             );
 
-            if (post) setEditor(post);
+            if (post) {
+                setEditor(post);
+            }
         });
     });
 }
 
+/* USTAWIANIE EDYTORA */
 function setEditor(post = null) {
     selectedSlug = post?.slug || null;
     selectedSha = post?.sha || null;
@@ -223,60 +271,106 @@ function setEditor(post = null) {
         : "Nowy artykuł";
 
     $("title").value = post?.meta.title || "";
-    $("date").value = post?.meta.date ||
-        new Date().toISOString().slice(0, 10);
-
+    $("date").value = post?.meta.date || today();
     $("category").value = post?.meta.category || "IT";
     $("description").value = post?.meta.description || "";
     $("tags").value = (post?.meta.tags || []).join(", ");
     $("content").value = post?.body || "";
 
     $("deletePost").hidden = !post;
+    $("previewPanel").hidden = true;
 
     renderPosts();
 }
 
+/* WCZYTYWANIE ARTYKUŁÓW Z GITHUBA */
 async function loadPosts() {
     const files = await github(
         `/contents/posts?ref=${BRANCH}`
     );
 
+    if (!Array.isArray(files)) {
+        throw new Error(
+            "GitHub nie zwrócił listy plików z folderu posts."
+        );
+    }
+
     const markdownFiles = files.filter(file =>
-        file.type === "file" && file.name.endsWith(".md")
+        file.type === "file" && /\.md$/i.test(file.name)
     );
 
-    posts = await Promise.all(markdownFiles.map(async file => {
-        const data = await github(
-            `/contents/posts/${encodeURIComponent(file.name)}?ref=${BRANCH}`
-        );
+    const loadedPosts = await Promise.all(
+        markdownFiles.map(async file => {
+            const data = await github(
+                `/contents/posts/${encodeURIComponent(file.name)}?ref=${BRANCH}`
+            );
 
-        const raw = decodeBase64(data.content || "");
-        const parsed = parsePost(
-            raw,
-            file.name.replace(/\.md$/i, "")
-        );
+            const raw = decodeBase64(data.content || "");
+            const slug = file.name.replace(/\.md$/i, "");
+            const parsed = parsePost(raw, slug);
 
-        return {
-            slug: file.name.replace(/\.md$/i, ""),
-            sha: data.sha,
-            meta: parsed.meta,
-            body: parsed.body
-        };
-    }));
+            return {
+                slug,
+                sha: data.sha,
+                meta: parsed.meta,
+                body: parsed.body
+            };
+        })
+    );
 
-    posts.sort((a, b) =>
+    posts = loadedPosts.sort((a, b) =>
         (b.meta.date || "").localeCompare(a.meta.date || "")
     );
 
     renderPosts();
-    setEditor(null);
 
-    showMessage(
-        "editorMessage",
-        `Wczytano ${posts.length} artykułów.`
-    );
+    if (selectedSlug) {
+        const current = posts.find(
+            post => post.slug === selectedSlug
+        );
+
+        if (current) {
+            setEditor(current);
+            return;
+        }
+    }
+
+    setEditor(null);
 }
 
+/* AKTUALIZACJA INDEKSU BLOGA */
+async function updatePostsIndex() {
+    const currentIndex = await github(
+        `/contents/posts/posts.json?ref=${BRANCH}`
+    );
+
+    const index = posts.map(post => ({
+        slug: post.slug,
+        title: post.meta.title || post.slug,
+        description: post.meta.description || "",
+        date: post.meta.date || "",
+        tags: post.meta.tags || [],
+        category: post.meta.category || "IT",
+        file: `posts/${post.slug}.md`
+    }));
+
+    await github("/contents/posts/posts.json", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: "Update blog posts index",
+            content: encodeBase64(
+                JSON.stringify(index, null, 2) + "\n"
+            ),
+            sha: currentIndex.sha,
+            branch: BRANCH
+        })
+    });
+}
+
+/* LOGOWANIE */
 $("loginForm").addEventListener("submit", async event => {
     event.preventDefault();
 
@@ -285,20 +379,30 @@ $("loginForm").addEventListener("submit", async event => {
     if (!token) return;
 
     $("connect").disabled = true;
-
     showMessage("loginMessage", "Łączenie z GitHub...");
 
     try {
         const repo = await github("");
+
+        if (repo.default_branch !== BRANCH) {
+            throw new Error(
+                `Repozytorium używa gałęzi ${repo.default_branch}, a panel ma ustawioną ${BRANCH}.`
+            );
+        }
+
+        await loadPosts();
 
         $("login").hidden = true;
         $("workspace").hidden = false;
         $("token").value = "";
 
         $("connectionStatus").textContent =
-            "Połączono · " + repo.default_branch;
+            `Połączono · ${repo.default_branch}`;
 
-        await loadPosts();
+        showMessage(
+            "editorMessage",
+            `Połączono poprawnie. Wczytano ${posts.length} artykułów.`
+        );
 
     } catch (error) {
         token = "";
@@ -309,22 +413,40 @@ $("loginForm").addEventListener("submit", async event => {
     }
 });
 
+/* DODAWANIE I EDYTOWANIE */
 $("postForm").addEventListener("submit", async event => {
     event.preventDefault();
 
+    if (busy) return;
+
     const title = $("title").value.trim();
+
+    if (!title) {
+        showMessage("editorMessage", "Podaj tytuł artykułu.", true);
+        return;
+    }
+
+    if (!$("content").value.trim()) {
+        showMessage("editorMessage", "Wpisz treść artykułu.", true);
+        return;
+    }
+
     const slug = selectedSlug || slugify(title);
 
-    if (!selectedSlug && posts.some(post => post.slug === slug)) {
+    if (
+        !selectedSlug &&
+        posts.some(post => post.slug === slug)
+    ) {
         showMessage(
             "editorMessage",
-            "Wpis o takim adresie już istnieje.",
+            "Artykuł o takim adresie już istnieje.",
             true
         );
         return;
     }
 
-    $("save").disabled = true;
+    setBusy(true);
+    showMessage("editorMessage", "Zapisywanie artykułu na GitHubie...");
 
     try {
         const payload = {
@@ -333,7 +455,9 @@ $("postForm").addEventListener("submit", async event => {
             branch: BRANCH
         };
 
-        if (selectedSha) payload.sha = selectedSha;
+        if (selectedSha) {
+            payload.sha = selectedSha;
+        }
 
         await github(
             `/contents/posts/${encodeURIComponent(slug)}.md`,
@@ -348,37 +472,58 @@ $("postForm").addEventListener("submit", async event => {
 
         selectedSlug = slug;
 
+        await loadPosts();
+        await updatePostsIndex();
+
         showMessage(
             "editorMessage",
-            "Zapisano artykuł w GitHub! Strona zaktualizuje się po wdrożeniu."
+            "Sukces! Artykuł zapisano i dodano do indeksu bloga."
         );
-
-        await loadPosts();
 
     } catch (error) {
         showMessage("editorMessage", error.message, true);
 
     } finally {
-        $("save").disabled = false;
+        setBusy(false);
     }
 });
 
+/* USUWANIE ARTYKUŁU */
 $("deletePost").addEventListener("click", async () => {
-    if (!selectedSlug || !selectedSha) return;
+    if (busy) return;
 
-    if (!confirm("Czy na pewno usunąć ten artykuł?")) return;
+    if (!selectedSlug || !selectedSha) {
+        showMessage(
+            "editorMessage",
+            "Najpierw wybierz artykuł z listy.",
+            true
+        );
+        return;
+    }
+
+    const slugToDelete = selectedSlug;
+    const shaToDelete = selectedSha;
+
+    const confirmed = confirm(
+        `Czy na pewno usunąć artykuł "${slugToDelete}"?\n\nTej operacji nie można cofnąć z panelu.`
+    );
+
+    if (!confirmed) return;
+
+    setBusy(true);
+    showMessage("editorMessage", "Usuwanie artykułu...");
 
     try {
         await github(
-            `/contents/posts/${encodeURIComponent(selectedSlug)}.md`,
+            `/contents/posts/${encodeURIComponent(slugToDelete)}.md`,
             {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    message: `Delete blog post: ${selectedSlug}`,
-                    sha: selectedSha,
+                    message: `Delete blog post: ${slugToDelete}`,
+                    sha: shaToDelete,
                     branch: BRANCH
                 })
             }
@@ -388,18 +533,40 @@ $("deletePost").addEventListener("click", async () => {
         selectedSha = null;
 
         await loadPosts();
+        await updatePostsIndex();
 
-        showMessage("editorMessage", "Artykuł został usunięty.");
+        showMessage(
+            "editorMessage",
+            "Artykuł został usunięty, a indeks bloga zaktualizowany."
+        );
 
     } catch (error) {
         showMessage("editorMessage", error.message, true);
+
+    } finally {
+        setBusy(false);
     }
 });
 
-$("newPost").addEventListener("click", () => setEditor(null));
+/* NOWY ARTYKUŁ */
+$("newPost").addEventListener("click", () => {
+    if (busy) return;
+
+    setEditor(null);
+
+    showMessage(
+        "editorMessage",
+        "Wpisz dane nowego artykułu."
+    );
+});
+
+/* WYSZUKIWANIE */
 $("search").addEventListener("input", renderPosts);
 
+/* WYLOGOWANIE */
 $("logout").addEventListener("click", () => {
+    if (busy) return;
+
     token = "";
     posts = [];
     selectedSlug = null;
@@ -409,13 +576,19 @@ $("logout").addEventListener("click", () => {
     $("login").hidden = false;
     $("token").value = "";
 
-    showMessage("loginMessage", "Rozłączono z GitHub.");
+    setEditor(null);
+
+    showMessage("loginMessage", "Rozłączono z GitHubem.");
 });
 
+/* PODGLĄD TEKSTU */
 $("preview").addEventListener("click", () => {
-    const markdown = $("content").value;
+    const title = $("title").value.trim();
+    const content = $("content").value;
 
-    $("previewContent").textContent = markdown;
+    $("previewContent").textContent =
+        `${title}\n\n${content}`;
+
     $("previewPanel").hidden = false;
 });
 
