@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#070b18">
     <title>Admin Console | kac0pi</title>
-
     <link rel="stylesheet" href="admin.css">
     <script src="admin.js" defer></script>
 </head>
-
 <body>
-
 <div class="container">
 
     <header>
@@ -21,23 +19,23 @@
     </header>
 
     <main>
-
         <section class="heading">
             <span class="eyebrow">CONTENT MANAGEMENT SYSTEM</span>
             <h1>Admin <span>Console.</span></h1>
-            <p>Zarządzaj treścią swojego bloga.</p>
+            <p>Zarządzaj artykułami na swoim blogu IT.</p>
         </section>
 
+        <!-- LOGOWANIE -->
         <section class="panel login" id="login">
-
             <h2>Połącz z GitHub</h2>
-
             <p>
-                Wklej token GitHub z uprawnieniem
-                Contents: Read and write dla repozytorium kac0pi.
+                Wprowadź Fine-grained Personal Access Token.
+                Token musi mieć dostęp do repozytorium kac0pi
+                oraz uprawnienie Contents: Read and write.
             </p>
 
             <form id="loginForm">
+                <label for="token">GitHub Personal Access Token</label>
                 <input
                     type="password"
                     id="token"
@@ -45,7 +43,6 @@
                     autocomplete="off"
                     required
                 >
-
                 <button type="submit" id="connect">
                     Połącz z GitHub
                 </button>
@@ -53,34 +50,30 @@
 
             <div class="help">
                 <h3>Jak utworzyć token?</h3>
-
                 <ol>
                     <li>
                         Otwórz
                         <a href="https://github.com/settings/personal-access-tokens/new"
-                           target="_blank"
-                           rel="noopener noreferrer">
+                           target="_blank" rel="noopener noreferrer">
                             GitHub Tokens
                         </a>.
                     </li>
-
                     <li>Wybierz Fine-grained token.</li>
                     <li>Wybierz repozytorium kac0pi.</li>
                     <li>Ustaw Contents → Read and write.</li>
-                    <li>Utwórz token i skopiuj go.</li>
+                    <li>Wygeneruj token i skopiuj go.</li>
                 </ol>
-
                 <p class="warning">
-                    Nie udostępniaj tokenu. Nie umieszczaj go w kodzie
-                    ani publicznym repozytorium. Panel nie zapisuje
-                    tokenu w LocalStorage.
+                    Nie udostępniaj tokenu. Nie umieszczaj go w plikach strony.
+                    Panel przechowuje go tylko w pamięci karty przeglądarki.
                 </p>
             </div>
 
-            <div id="loginMessage" class="message"></div>
-
+            <div id="loginMessage" class="message"
+                 role="status" aria-live="polite"></div>
         </section>
 
+        <!-- GŁÓWNY PANEL -->
         <section id="workspace" hidden>
 
             <div class="toolbar panel">
@@ -88,81 +81,87 @@
                     <strong>kac0pi / kac0pi</strong>
                     <small id="connectionStatus">Połączono</small>
                 </div>
-
-                <button class="secondary" id="logout">
+                <button type="button" class="secondary" id="logout">
                     Rozłącz
                 </button>
             </div>
 
             <div class="layout">
 
+                <!-- LISTA ARTYKUŁÓW -->
                 <aside class="panel sidebar">
-
                     <div class="sidebar-heading">
                         <h2>Artykuły</h2>
-
-                        <button id="newPost">
-                            + Nowy
-                        </button>
+                        <button type="button" id="newPost">+ Nowy</button>
                     </div>
 
                     <input
                         type="search"
                         id="search"
                         placeholder="Szukaj artykułu..."
+                        aria-label="Szukaj artykułu"
                     >
 
-                    <div id="postList" class="post-list"></div>
-
+                    <div id="postList" class="post-list">
+                        <p class="muted">Brak załadowanych artykułów.</p>
+                    </div>
                 </aside>
 
+                <!-- EDYTOR -->
                 <section class="panel editor">
-
                     <h2 id="editorTitle">Nowy artykuł</h2>
 
                     <form id="postForm">
-
-                        <label for="title">Tytuł</label>
-                        <input id="title" required maxlength="120">
+                        <label for="title">Tytuł artykułu</label>
+                        <input
+                            id="title"
+                            required
+                            maxlength="120"
+                            placeholder="Np. Moja przygoda z Linuxem"
+                        >
 
                         <div class="form-grid">
-
                             <div>
-                                <label for="date">Data</label>
+                                <label for="date">Data publikacji</label>
                                 <input id="date" type="date" required>
                             </div>
-
                             <div>
                                 <label for="category">Kategoria</label>
                                 <input id="category" value="IT">
                             </div>
-
                         </div>
 
-                        <label for="description">Opis</label>
-                        <input id="description" maxlength="220">
+                        <label for="description">Krótki opis</label>
+                        <input
+                            id="description"
+                            maxlength="220"
+                            placeholder="Opis widoczny na liście wpisów"
+                        >
 
                         <label for="tags">Tagi</label>
                         <input
                             id="tags"
-                            placeholder="IT, programowanie, Linux"
+                            placeholder="webdev, hardware, linux"
                         >
 
                         <label for="content">Treść artykułu (Markdown)</label>
-
                         <textarea
                             id="content"
                             required
-                            placeholder="# Mój artykuł&#10;&#10;Treść..."
+                            placeholder="# Mój artykuł
+
+Tutaj wpisz treść artykułu.
+
+## Pierwszy nagłówek
+
+Możesz używać Markdown:
+- lista
+- **pogrubienie**
+- [link](https://example.com)"
                         ></textarea>
 
                         <div class="buttons">
-
-                            <button
-                                type="button"
-                                class="secondary"
-                                id="preview"
-                            >
+                            <button type="button" class="secondary" id="preview">
                                 Podgląd
                             </button>
 
@@ -172,36 +171,32 @@
                                 id="deletePost"
                                 hidden
                             >
-                                Usuń
+                                Usuń artykuł
                             </button>
 
                             <button type="submit" id="save">
                                 Zapisz i opublikuj
                             </button>
-
                         </div>
-
                     </form>
 
-                    <div id="editorMessage" class="message"></div>
-
+                    <div id="editorMessage" class="message"
+                         role="status" aria-live="polite"></div>
                 </section>
-
             </div>
 
+            <!-- PODGLĄD -->
             <section class="panel preview-panel" id="previewPanel" hidden>
                 <div class="preview-heading">
                     <h2>Podgląd artykułu</h2>
-                    <button class="secondary" id="closePreview">
+                    <button type="button" class="secondary" id="closePreview">
                         Zamknij
                     </button>
                 </div>
-
                 <article id="previewContent"></article>
             </section>
 
         </section>
-
     </main>
 
     <footer>
@@ -209,6 +204,5 @@
     </footer>
 
 </div>
-
 </body>
 </html>
